@@ -264,8 +264,32 @@ pub struct CreateCaseRequest {
     pub is_rework: Option<bool>,
     pub is_death: Option<bool>,
     pub opened_date: Option<NaiveDate>,
+    pub completed_date: Option<NaiveDate>,
     pub case_notes: Option<String>,
     pub additional_info: Option<String>,
+    pub case_status: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ImportCasesRequest {
+    pub cases: Vec<CreateCaseRequest>,
+    /// When true (default), update existing rows matched by case_number.
+    pub update_existing: Option<bool>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ImportCasesResponse {
+    pub created: i64,
+    pub updated: i64,
+    pub skipped: i64,
+    pub errors: Vec<ImportCaseError>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ImportCaseError {
+    pub row: usize,
+    pub case_number: Option<String>,
+    pub message: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -283,8 +307,10 @@ pub struct UpdateCaseRequest {
     pub is_rush: Option<bool>,
     pub is_rework: Option<bool>,
     pub is_death: Option<bool>,
+    pub opened_date: Option<NaiveDate>,
     pub case_notes: Option<String>,
     pub additional_info: Option<String>,
+    pub case_status: Option<String>,
     pub completed_date: Option<NaiveDate>,
 }
 

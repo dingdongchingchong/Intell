@@ -46,3 +46,4 @@ legacy/**/target/
 
 # Leftover empty dir if local cleanup incomplete
 frontend/
+.env*

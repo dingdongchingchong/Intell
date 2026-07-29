@@ -6,6 +6,7 @@ import { casesAPI } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { stageColor, stageLabel } from "@/lib/utils";
 import { NewCaseButton } from "@/components/cases/new-case-button";
+import { ImportCasesButton } from "@/components/cases/import-cases-button";
 
 export default async function CasesPage() {
   const session = await getServerSession(authOptions);
@@ -29,7 +30,10 @@ export default async function CasesPage() {
           <h1 className="font-display text-3xl tracking-tight">Cases</h1>
           <p className="text-slate-500">{total} total</p>
         </div>
-        <NewCaseButton />
+        <div className="flex flex-wrap items-center gap-2">
+          <ImportCasesButton />
+          <NewCaseButton />
+        </div>
       </div>
 
       {error && (

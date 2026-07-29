@@ -14,8 +14,8 @@ use caseflow_core::config::Settings;
 use caseflow_core::db;
 use caseflow_core::error::AppError;
 use caseflow_core::models::{
-    CaseListQuery, CreateCaseRequest, CreateUserRequest, LoginRequest, UpdateCaseRequest,
-    UpdateStageRequest,
+    CaseListQuery, CreateCaseRequest, CreateUserRequest, ImportCasesRequest, LoginRequest,
+    UpdateCaseRequest, UpdateStageRequest,
 };
 use caseflow_core::services::{auth as auth_svc, cases as cases_svc, users as users_svc};
 use serde_json::{json, Value};
@@ -107,6 +107,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/v1/auth/login", post(login))
         .route("/api/v1/dashboard", get(dashboard))
         .route("/api/v1/cases", get(list_cases).post(create_case))
+        .route("/api/v1/cases/import", post(import_cases))
         .route("/api/v1/cases/clients", get(list_clients))
         .route("/api/v1/cases/next-id", get(next_case_id))
         .route(
@@ -174,6 +175,18 @@ async fn create_case(
     let actor = user_id(&claims)?;
     let case = cases_svc::create_case(&state.pool, actor, body).await?;
     Ok(Json(json!({ "case": case })))
+}
+
+async fn import_cases(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(body): Json<ImportCasesRequest>,
+) -> Result<Json<Value>, ApiError> {
+    let claims = require_user(&headers, &state.settings)?;
+    authorize(&claims.role, Permission::CaseCreate)?;
+    let actor = user_id(&claims)?;
+    let result = cases_svc::import_cases(&state.pool, actor, body).await?;
+    Ok(Json(json!(result)))
 }
 
 async fn get_case(

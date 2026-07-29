@@ -61,5 +61,9 @@ export interface CreateCaseInput {
   priority?: string;
   is_rush?: boolean;
   is_rework?: boolean;
+  opened_date?: string;
+  completed_date?: string;
   case_notes?: string;
+  additional_info?: string;
+  case_status?: string;
 }
