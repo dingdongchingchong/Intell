@@ -34,7 +34,7 @@ export default function LoginPage() {
       );
       return;
     }
-    router.push("/dashboard");
+    router.push("/investigation.html");
     router.refresh();
   }
 
@@ -50,7 +50,10 @@ export default function LoginPage() {
             </span>
           </div>
           <CardTitle className="text-base font-normal text-slate-300">
-            Sign in to the investigation workspace
+            Sign in for admin tools, or{" "}
+            <a href="/investigation.html" className="text-blue-300 underline">
+              open Investigation Manager
+            </a>
           </CardTitle>
         </CardHeader>
         <CardContent>

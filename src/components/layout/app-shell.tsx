@@ -15,9 +15,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const nav = [
+  { href: "/investigation.html", label: "Investigation Manager", icon: Briefcase },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/cases", label: "Cases", icon: Briefcase },
-  { href: "/kanban", label: "Kanban", icon: Columns3 },
+  { href: "/cases", label: "Cases (API)", icon: Briefcase },
+  { href: "/kanban", label: "Kanban (API)", icon: Columns3 },
   { href: "/users", label: "Users", icon: Users, roles: ["admin"] },
 ];
 
@@ -42,18 +43,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               .filter((item) => !item.roles || (role && item.roles.includes(role)))
               .map((item) => {
                 const Icon = item.icon;
-                const active = pathname.startsWith(item.href);
+                const active =
+                  item.href.endsWith(".html")
+                    ? false
+                    : pathname.startsWith(item.href);
+                const className = cn(
+                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  active
+                    ? "bg-slate-900 text-white"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                );
+                if (item.href.endsWith(".html")) {
+                  return (
+                    <a key={item.href} href={item.href} className={className}>
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                    </a>
+                  );
+                }
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      active
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    )}
-                  >
+                  <Link key={item.href} href={item.href} className={className}>
                     <Icon className="h-4 w-4" />
                     {item.label}
                   </Link>

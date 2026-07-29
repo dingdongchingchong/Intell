@@ -61,7 +61,8 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 → login → Dashboard / Cases / Kanban / Users.
+Open http://localhost:3000 — redirects to the **Investigation Manager** (`/investigation.html`), the original CaseFlow SPA (Kanban, CSV/Excel import, localStorage). Admin API UI remains at `/login` → `/dashboard`.
+
 
 ## Deploy to Vercel (frontend)
 
