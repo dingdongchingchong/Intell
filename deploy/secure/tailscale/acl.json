@@ -1,0 +1,13 @@
+{
+  "tagOwners": {
+    "tag:caseflow-server": ["autogroup:admin"],
+    "tag:caseflow-users": ["autogroup:admin"]
+  },
+  "acls": [
+    {
+      "action": "accept",
+      "src": ["tag:caseflow-users", "autogroup:admin"],
+      "dst": ["tag:caseflow-server:8080", "tag:caseflow-server:22"]
+    }
+  ]
+}

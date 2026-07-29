@@ -1,0 +1,51 @@
+[package]
+name = "caseflow-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "CaseFlow Vercel serverless API + local Axum server"
+default-run = "server"
+
+[dependencies]
+caseflow-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+dotenvy = { workspace = true }
+tracing = { workspace = true }
+http = { workspace = true }
+vercel_runtime = { workspace = true }
+axum = { version = "0.8", features = ["macros"] }
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+sqlx = { workspace = true }
+
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+
+[[bin]]
+name = "seed"
+path = "src/bin/seed.rs"
+
+[[bin]]
+name = "health"
+path = "src/bin/health.rs"
+
+[[bin]]
+name = "auth"
+path = "src/bin/auth.rs"
+
+[[bin]]
+name = "cases"
+path = "src/bin/cases.rs"
+
+[[bin]]
+name = "users"
+path = "src/bin/users.rs"
+
+[[bin]]
+name = "dashboard"
+path = "src/bin/dashboard.rs"

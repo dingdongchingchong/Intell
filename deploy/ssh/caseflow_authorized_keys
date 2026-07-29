@@ -1,0 +1,2 @@
+# Managed by CaseFlow CMS admin API (SSH_AUTHORIZED_KEYS_PATH).
+# Sync into OpenSSH with: ./deploy/ssh/sync-authorized-keys.sh

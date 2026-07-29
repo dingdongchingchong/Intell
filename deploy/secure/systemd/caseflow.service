@@ -1,0 +1,28 @@
+[Unit]
+Description=CaseFlow CMS (private network)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=caseflow
+Group=caseflow
+WorkingDirectory=/opt/caseflow/backend
+EnvironmentFile=/opt/caseflow/backend/.env
+ExecStart=/opt/caseflow/backend/target/release/caseflow_cms
+Restart=on-failure
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/caseflow/backend
+CapabilityBoundingSet=
+AmbientCapabilities=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

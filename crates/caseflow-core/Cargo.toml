@@ -1,0 +1,21 @@
+[package]
+name = "caseflow-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "CaseFlow domain logic, auth, and database access (SQLx)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+jsonwebtoken = { workspace = true }
+bcrypt = { workspace = true }
+sqlx = { workspace = true }
+dotenvy = { workspace = true }
+tracing = { workspace = true }
+http = { workspace = true }

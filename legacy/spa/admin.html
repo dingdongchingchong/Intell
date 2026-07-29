@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>CaseFlow CMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #1B4D3E;
+      --primary-mid: #2A6B56;
+      --primary-light: #3D8B6E;
+      --accent: #C4A35A;
+      --success: #2F9E6A;
+      --warning: #C9922A;
+      --danger: #C44B3C;
+      --ink: #14201C;
+      --muted: #5C6B64;
+      --line: #D5DDD8;
+      --paper: #F3F6F4;
+      --surface: #FFFFFF;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(20, 32, 28, 0.08);
+      --shadow-lg: 0 16px 48px rgba(20, 32, 28, 0.14);
+      --font: "DM Sans", system-ui, sans-serif;
+      --display: "Instrument Serif", Georgia, serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(61, 139, 110, 0.18), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(196, 163, 90, 0.16), transparent),
+        linear-gradient(165deg, #E8EEEA 0%, var(--paper) 45%, #DEE8E2 100%);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    body.login-mode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-container {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid rgba(213, 221, 216, 0.8);
+      animation: rise 0.45s ease-out;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-header { text-align: center; margin-bottom: 32px; }
+
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(145deg, var(--primary-mid), var(--primary));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 26px;
+      color: white;
+      box-shadow: 0 8px 20px rgba(27, 77, 62, 0.28);
+    }
+
+    .login-header h1 {
+      font-family: var(--display);
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .login-header p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #F8FAF9;
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 4px rgba(42, 107, 86, 0.12);
+      background: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(145deg, var(--primary-mid), var(--primary));
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(27, 77, 62, 0.28);
+    }
+
+    .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .btn .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .btn.loading .spinner { display: block; }
+    .btn.loading .btn-text { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-message {
+      display: none;
+      background: #FDF2F0;
+      border: 1px solid #F0C4BE;
+      color: var(--danger);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .error-message.show { display: block; }
+
+    .login-defaults {
+      text-align: center;
+      margin-top: 20px;
+      padding: 12px;
+      background: var(--paper);
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .login-defaults code {
+      background: #E4EBE7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--ink);
+    }
+
+    #dashboardContainer {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+      animation: rise 0.35s ease-out;
+    }
+
+    .dash-shell {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      border: 1px solid rgba(213, 221, 216, 0.9);
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+      gap: 12px;
+      background:
+        linear-gradient(90deg, rgba(27, 77, 62, 0.04), transparent 40%);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(145deg, var(--primary-mid), var(--primary));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+    }
+
+    .dash-header h2 {
+      font-family: var(--display);
+      font-size: 26px;
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-chip {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .btn-sm {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 8px;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-muted {
+      background: #E8EEEA;
+      color: var(--ink);
+    }
+
+    .btn-muted:hover:not(:disabled) {
+      box-shadow: none;
+      background: #DCE5E0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      padding: 24px;
+    }
+
+    .stat {
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .stat:hover { border-color: var(--line); }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .posts-section { padding: 0 24px 24px; }
+
+    .posts-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .posts-toolbar h3 {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    #postsList {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .post-row {
+      background: var(--paper);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      border: 1px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .post-row:hover {
+      border-color: var(--line);
+      background: #EEF3F0;
+    }
+
+    .post-title {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .post-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .post-actions { display: flex; gap: 8px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state i { font-size: 28px; margin-bottom: 8px; display: block; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 32, 28, 0.45);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-panel {
+      background: white;
+      border-radius: var(--radius);
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      animation: rise 0.25s ease-out;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-head h3 {
+      font-family: var(--display);
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .modal-actions .btn { flex: 2; }
+    .modal-actions .btn-muted { flex: 1; }
+
+    @media (max-width: 480px) {
+      .login-container { padding: 32px 20px; }
+      .login-header h1 { font-size: 26px; }
+      .form-group input { font-size: 16px; }
+      .dash-header h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body class="login-mode">
+
+  <div class="login-container" id="loginContainer">
+    <div class="login-header">
+      <div class="login-logo"><i class="fas fa-shield-halved"></i></div>
+      <h1>CaseFlow CMS</h1>
+      <p>Sign in to manage content</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autocomplete="username" placeholder="Enter your username" value="admin" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" value="admin123456" required />
+      </div>
+
+      <button type="submit" class="btn" id="loginBtn">
+        <span class="spinner"></span>
+        <span class="btn-text"><i class="fas fa-arrow-right"></i> Sign In</span>
+      </button>
+
+      <div class="error-message" id="errorMessage">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorText">Invalid credentials</span>
+      </div>
+
+      <div class="login-defaults">
+        <i class="fas fa-key"></i>
+        Default: <code>admin</code> / <code>admin123456</code>
+        <br /><span style="opacity:.85">API: <code id="apiUrlHint"></code></span>
+      </div>
+    </form>
+  </div>
+
+  <div id="dashboardContainer">
+    <div class="dash-shell">
+      <div class="dash-header">
+        <div class="brand-row">
+          <div class="brand-mark"><i class="fas fa-shield-halved"></i></div>
+          <h2>CaseFlow</h2>
+        </div>
+        <div class="header-actions">
+          <span class="user-chip"><i class="fas fa-user"></i> <span id="userDisplay">Admin</span></span>
+          <button type="button" class="btn btn-sm btn-danger" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="statPosts">0</div>
+          <div class="stat-label">Posts</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statUsers">0</div>
+          <div class="stat-label">Users</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statPublished">0</div>
+          <div class="stat-label">Published</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+      </div>
+
+      <div class="posts-section">
+        <div class="posts-toolbar">
+          <h3><i class="fas fa-file-alt"></i> Posts</h3>
+          <button type="button" class="btn btn-sm" id="newPostBtn">
+            <i class="fas fa-plus"></i> New Post
+          </button>
+        </div>
+        <div id="postsList">
+          <div class="empty-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading posts...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="postModal" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3 id="modalTitle">New Post</h3>
+        <button type="button" class="modal-close" id="closeModalBtn" aria-label="Close">&times;</button>
+      </div>
+      <form id="postForm">
+        <input type="hidden" id="postId" />
+        <div class="form-group">
+          <label for="postTitle">Title</label>
+          <input type="text" id="postTitle" placeholder="Enter post title" required />
+        </div>
+        <div class="form-group">
+          <label for="postExcerpt">Excerpt</label>
+          <input type="text" id="postExcerpt" placeholder="Short summary" />
+        </div>
+        <div class="form-group">
+          <label for="postContent">Content</label>
+          <textarea id="postContent" rows="6" placeholder="Write your post content here..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="postStatus">Status</label>
+          <select id="postStatus">
+            <option value="draft">Draft</option>
+            <option value="published" selected>Published</option>
+            <option value="archived">Archived</option>
+            <option value="pending_review">Pending review</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-muted" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn"><i class="fas fa-save"></i> Save Post</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const TOKEN_KEY = 'access_token';
+    const USER_KEY = 'caseflow_user';
+    const REFRESH_TOKEN_KEY = 'refresh_token';
+    const TAILSCALE_API = 'http://100.68.147.74:8080';
+
+    function resolveApiUrl() {
+      const saved = localStorage.getItem('cf_api_base');
+      if (saved) return saved.replace(/\/$/, '');
+      const host = location.hostname;
+      // Same host as the page (Tailscale or LAN) → talk to :8080 there
+      if (location.protocol.startsWith('http') && host && host !== 'localhost' && host !== '127.0.0.1') {
+        return `http://${host}:8080`;
+      }
+      // file:// or localhost page: try loopback first, Tailscale as fallback default
+      return 'http://127.0.0.1:8080';
+    }
+
+    const API_URL = resolveApiUrl();
+    // If loopback fails in practice, user can: localStorage.setItem('cf_api_base', TAILSCALE_API)
+
+    // ============================================
+    // AUTH HELPERS
+    // ============================================
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+    function setToken(token) {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+    function removeToken() {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+    function getRefreshToken() {
+      return localStorage.getItem(REFRESH_TOKEN_KEY);
+    }
+    function setRefreshToken(token) {
+      if (token) localStorage.setItem(REFRESH_TOKEN_KEY, token);
+      else localStorage.removeItem(REFRESH_TOKEN_KEY);
+    }
+    function getUser() {
+      try {
+        const raw = localStorage.getItem(USER_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+    function setUser(user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+    }
+    function removeUser() {
+      localStorage.removeItem(USER_KEY);
+    }
+    function isAuthenticated() {
+      return !!getToken();
+    }
+    function getAuthHeaders() {
+      const token = getToken();
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    }
+
+    let accessToken = getToken();
+    let refreshToken = getRefreshToken();
+
+    const apiHint = document.getElementById('apiUrlHint');
+    if (apiHint) apiHint.textContent = API_URL;
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // ============================================
+    // API HELPER
+    // ============================================
+    async function apiRequest(endpoint, options = {}) {
+      const headers = {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+        ...(options.headers || {}),
+      };
+      if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+      let response;
+      try {
+        response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+      } catch (err) {
+        const tip =
+          API_URL.includes('127.0.0.1') || API_URL.includes('localhost')
+            ? ` Try opening the UI at http://100.68.147.74:3000 or run: localStorage.setItem('cf_api_base','${TAILSCALE_API}'); location.reload()`
+            : ' Confirm Tailscale is connected and `cargo run` is listening.';
+        throw new Error(
+          `Cannot reach API at ${API_URL}. (${err.message})${tip}`
+        );
+      }
+
+      let data = null;
+      const text = await response.text();
+      if (text) {
+        try { data = JSON.parse(text); } catch { data = { error: text }; }
+      }
+
+      if (!response.ok) {
+        if (response.status === 401 && endpoint !== "/api/v1/auth/login") {
+          handleLogout(false);
+        }
+        const msg = data?.error || data?.message || `Request failed (${response.status})`;
+        throw new Error(msg);
+      }
+      return data;
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      const login = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const btn = document.getElementById("loginBtn");
+      const errorEl = document.getElementById("errorMessage");
+      const errorText = document.getElementById("errorText");
+
+      btn.classList.add("loading");
+      btn.disabled = true;
+      errorEl.classList.remove("show");
+
+      try {
+        // Backend LoginRequest: { login, password } (username is an alias — do not send both)
+        const result = await apiRequest("/api/v1/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ login, password }),
+        });
+
+        const tokens = result?.data?.tokens;
+        const user = result?.data?.user;
+        if (!tokens?.access_token) throw new Error("No token received");
+
+        accessToken = tokens.access_token;
+        refreshToken = tokens.refresh_token || null;
+        setToken(accessToken);
+        setRefreshToken(refreshToken);
+        if (user) setUser(user);
+
+        if (user?.username || user?.display_name) {
+          document.getElementById("userDisplay").textContent =
+            user.display_name || user.username;
+        }
+        showDashboard();
+      } catch (error) {
+        console.error("Login error:", error);
+        errorText.textContent = error.message || "Invalid credentials. Try again.";
+        errorEl.classList.add("show");
+      } finally {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+      }
+    }
+
+    function showDashboard() {
+      document.body.classList.remove("login-mode");
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("dashboardContainer").style.display = "block";
+      loadMe();
+      loadPosts();
+      loadStats();
+    }
+
+    async function loadMe() {
+      try {
+        const user = await apiRequest("/api/v1/auth/me");
+        if (user?.data?.username) {
+          document.getElementById("userDisplay").textContent =
+            user.data.display_name || user.data.username;
+          setUser(user.data);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadPosts() {
+      const container = document.getElementById("postsList");
+      try {
+        const result = await apiRequest("/api/v1/admin/posts?per_page=50");
+        const posts = result?.data?.items || [];
+
+        if (!posts.length) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-inbox"></i>
+              <p>No posts yet. Create your first post!</p>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = posts.map((post) => `
+          <div class="post-row">
+            <div>
+              <div class="post-title">${escapeHtml(post.title || "Untitled")}</div>
+              <div class="post-meta">
+                <i class="fas fa-tag"></i> ${escapeHtml(post.status || "draft")}
+                ${post.published_at ? ` · ${new Date(post.published_at).toLocaleDateString()}` : ""}
+                · ${post.view_count ?? 0} views
+              </div>
+            </div>
+            <div class="post-actions">
+              <button type="button" class="btn btn-sm btn-muted" data-edit="${post.id}" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-danger" data-delete="${post.id}" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `).join("");
+
+        container.querySelectorAll("[data-edit]").forEach((btn) => {
+          btn.addEventListener("click", () => editPost(btn.dataset.edit));
+        });
+        container.querySelectorAll("[data-delete]").forEach((btn) => {
+          btn.addEventListener("click", () => deletePost(btn.dataset.delete));
+        });
+      } catch (error) {
+        container.innerHTML = `
+          <div class="empty-state" style="color:var(--danger)">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Failed to load posts: ${escapeHtml(error.message)}</p>
+          </div>`;
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const result = await apiRequest("/api/v1/admin/dashboard");
+        const data = result?.data || {};
+        const byStatus = data.posts_by_status || [];
+        const totalPosts = byStatus.reduce((sum, row) => sum + (row.count || 0), 0);
+        document.getElementById("statPosts").textContent = totalPosts;
+        document.getElementById("statUsers").textContent = data.users_total ?? 0;
+        document.getElementById("statPublished").textContent = data.published_posts ?? 0;
+        document.getElementById("statPending").textContent = data.pending_review ?? 0;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function openModal(isEdit) {
+      document.getElementById("modalTitle").textContent = isEdit ? "Edit Post" : "New Post";
+      document.getElementById("postModal").classList.add("open");
+    }
+
+    function closeModal() {
+      document.getElementById("postModal").classList.remove("open");
+    }
+
+    function showCreatePost() {
+      document.getElementById("postId").value = "";
+      document.getElementById("postTitle").value = "";
+      document.getElementById("postExcerpt").value = "";
+      document.getElementById("postContent").value = "";
+      document.getElementById("postStatus").value = "published";
+      openModal(false);
+    }
+
+    async function editPost(id) {
+      try {
+        const result = await apiRequest(`/api/v1/posts/${id}`);
+        const post = result?.data?.post || result?.data;
+        document.getElementById("postId").value = post.id;
+        document.getElementById("postTitle").value = post.title || "";
+        document.getElementById("postExcerpt").value = post.excerpt || "";
+        document.getElementById("postContent").value = post.content || "";
+        document.getElementById("postStatus").value = post.status || "draft";
+        openModal(true);
+      } catch (error) {
+        alert("Failed to load post: " + error.message);
+      }
+    }
+
+    async function deletePost(id) {
+      if (!confirm("Delete this post?")) return;
+      try {
+        await apiRequest(`/api/v1/posts/${id}`, { method: "DELETE" });
+        await loadPosts();
+        await loadStats();
+      } catch (error) {
+        alert("Failed to delete post: " + error.message);
+      }
+    }
+
+    async function savePost(event) {
+      event.preventDefault();
+      const id = document.getElementById("postId").value;
+      const payload = {
+        title: document.getElementById("postTitle").value.trim(),
+        excerpt: document.getElementById("postExcerpt").value.trim() || null,
+        content: document.getElementById("postContent").value,
+        status: document.getElementById("postStatus").value,
+      };
+
+      try {
+        if (id) {
+          await apiRequest(`/api/v1/posts/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(payload),
+          });
+        } else {
+          await apiRequest("/api/v1/posts", {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+        }
+        closeModal();
+        await loadPosts();
+        await loadStats();
+      } catch (error) {
+        alert("Failed to save post: " + error.message);
+      }
+    }
+
+    function handleLogout(clearForm = true) {
+      removeToken();
+      removeUser();
+      setRefreshToken(null);
+      accessToken = null;
+      refreshToken = null;
+      document.getElementById("dashboardContainer").style.display = "none";
+      document.getElementById("loginContainer").style.display = "block";
+      document.body.classList.add("login-mode");
+      closeModal();
+      if (clearForm) {
+        document.getElementById("errorMessage").classList.remove("show");
+      }
+    }
+
+    function logout() {
+      handleLogout(true);
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", handleLogin);
+    document.getElementById("logoutBtn").addEventListener("click", () => logout());
+    document.getElementById("newPostBtn").addEventListener("click", showCreatePost);
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
+    document.getElementById("postForm").addEventListener("submit", savePost);
+    document.getElementById("postModal").addEventListener("click", (e) => {
+      if (e.target.id === "postModal") closeModal();
+    });
+
+    if (isAuthenticated()) showDashboard();
+  </script>
+</body>
+</html>

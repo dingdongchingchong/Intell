@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "CaseFlow CMS",
+  "version": "0.1.0",
+  "identifier": "com.caseflow.cms",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "",
+    "frontendDist": "../frontend"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "CaseFlow CMS",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "externalBin": [
+      "binaries/caseflow-backend"
+    ],
+    "resources": {
+      "../backend/.env": "backend/.env",
+      "../backend/migrations": "backend/migrations"
+    },
+    "shortDescription": "CaseFlow investigation CMS",
+    "longDescription": "CaseFlow CMS desktop application with embedded API server."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "caseflow",
+  "private": true,
+  "description": "CaseFlow monorepo scripts",
+  "scripts": {
+    "dev:web": "npm --prefix frontend run dev",
+    "build:web": "npm --prefix frontend run build",
+    "dev:api": "cargo run -p caseflow-api --bin server",
+    "seed": "cargo run -p caseflow-api --bin seed",
+    "tauri:dev": "npm --prefix desktop run tauri:dev || echo 'See desktop/ and docs/DESKTOP.md'"
+  }
+}

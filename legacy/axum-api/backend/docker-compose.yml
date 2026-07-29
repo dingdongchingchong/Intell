@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: caseflow_cms_db
+    environment:
+      POSTGRES_USER: cms
+      POSTGRES_PASSWORD: cms
+      POSTGRES_DB: caseflow_cms
+    ports:
+      - "5432:5432"
+    volumes:
+      - cms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cms -d caseflow_cms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: caseflow_cms_redis
+    ports:
+      - "6379:6379"
+    profiles: ["cache"]
+
+volumes:
+  cms_pgdata:

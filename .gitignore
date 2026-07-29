@@ -1,0 +1,31 @@
+# Dependencies / build
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+target/
+api/target/
+crates/*/target/
+dist/
+
+# Env / secrets
+.env
+.env.local
+frontend/.env.local
+**/.env
+!**/.env.example
+
+# Logs / OS
+logs/
+*.log
+.DS_Store
+
+# Tauri / desktop
+desktop/src-tauri/target/
+desktop/src-tauri/binaries/caseflow-backend-*
+
+# Legacy cargo
+legacy/**/target/
+
+# IDE
+.vercel
