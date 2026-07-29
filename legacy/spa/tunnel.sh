@@ -5,8 +5,12 @@
 
 set -euo pipefail
 
-SERVER_USER="${SERVER_USER:-huntersthompson}"
-SERVER_HOST="${SERVER_HOST:-100.68.147.74}"
+SERVER_USER="${SERVER_USER:-$USER}"
+SERVER_HOST="${SERVER_HOST:-${TAILSCALE_HOST:-}}"
+if [[ -z "$SERVER_HOST" ]]; then
+  echo "Set SERVER_HOST or TAILSCALE_HOST (Tailscale IP / MagicDNS)." >&2
+  exit 1
+fi
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
 BACKEND_PORT="${BACKEND_PORT:-8080}"
 SSH_OPTS="${SSH_OPTS:--o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes}"

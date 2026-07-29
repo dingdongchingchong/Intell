@@ -1188,9 +1188,9 @@
           <div class="method-card">
             <h3><i class="fa-solid fa-globe"></i> Tailscale</h3>
             <p>If Tailscale is installed and connected:</p>
-            <code>http://100.68.147.74:3000</code>
-            <p>or MagicDNS:</p>
-            <code>http://caseflow.tail18069f.ts.net:3000</code>
+            <code>http://&lt;TAILSCALE_IP_OR_MAGICDNS&gt;:3000</code>
+            <p>or MagicDNS hostname from your admin</p>
+            <code>http://&lt;MAGIC_DNS&gt;:3000</code>
             <p><strong>Requires:</strong> Tailscale on the same tailnet</p>
           </div>
           <div class="method-card">
@@ -5132,7 +5132,7 @@
 3. If you have no SSH key, send the printed public key to your admin
 4. Open http://localhost:3000 and sign in
 
-Tailscale alternative: http://100.68.147.74:3000
+Tailscale alternative: ask your admin for the Tailscale URL (http://&lt;host&gt;:3000)
 `;
       navigator.clipboard.writeText(text).then(
         () => Utils.toast('Instructions copied', 'success'),

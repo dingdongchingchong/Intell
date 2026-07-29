@@ -10,10 +10,26 @@ dist/
 
 # Env / secrets
 .env
+.env.*
+!.env.example
+!**/.env.example
 .env.local
 frontend/.env.local
 **/.env
-!**/.env.example
+**/.env.production
+**/.env.*.bak
+!.env.example
+
+# Keys / credentials
+*.pem
+*.p12
+*.key
+id_rsa
+id_ed25519
+id_ecdsa
+# Accidental OpenSSH key dumps in the repo root
+\# On user*
+\#\ On\ user*
 
 # Logs / OS
 logs/
@@ -29,3 +45,4 @@ legacy/**/target/
 
 # IDE
 .vercel
+.cursor/

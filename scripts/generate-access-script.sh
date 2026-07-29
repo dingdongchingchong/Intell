@@ -6,12 +6,17 @@ set -euo pipefail
 
 USER_EMAIL="${1:-}"
 CMS_USERNAME="${2:-}"
-SERVER_HOST="${SERVER_HOST:-100.68.147.74}"
-MAGIC_DNS="${MAGIC_DNS:-caseflow.tail18069f.ts.net}"
+SERVER_HOST="${SERVER_HOST:-}"
+MAGIC_DNS="${MAGIC_DNS:-}"
 OUT_DIR="${OUT_DIR:-/tmp}"
 
 if [[ -z "$USER_EMAIL" || -z "$CMS_USERNAME" ]]; then
-  echo "Usage: $0 <user-email> <cms-username>"
+  echo "Usage: SERVER_HOST=100.x.y.z MAGIC_DNS=name.tailnet.ts.net $0 <user-email> <cms-username>"
+  exit 1
+fi
+
+if [[ -z "$SERVER_HOST" || -z "$MAGIC_DNS" ]]; then
+  echo "Set SERVER_HOST and MAGIC_DNS (Tailscale IP / MagicDNS hostname)." >&2
   exit 1
 fi
 

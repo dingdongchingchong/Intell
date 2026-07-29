@@ -75,7 +75,9 @@ echo -e "${GREEN}CaseFlow CMS${NC}"
 echo "=============="
 echo "Backend  → http://127.0.0.1:${BACKEND_PORT}  (log: $LOG_DIR/backend.log)"
 echo "Frontend → http://127.0.0.1:${FRONTEND_PORT}  (log: $LOG_DIR/frontend.log)"
-echo "Tailscale: http://100.68.147.74:${FRONTEND_PORT}"
+if [[ -n "${TAILSCALE_HOST:-}" ]]; then
+  echo "Tailscale: http://${TAILSCALE_HOST}:${FRONTEND_PORT}"
+fi
 echo ""
 echo -e "${YELLOW}Ctrl+C stops both.${NC}"
 echo ""

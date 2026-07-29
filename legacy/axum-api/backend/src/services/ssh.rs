@@ -32,8 +32,8 @@ impl SshKeyService {
                 return PathBuf::from(p);
             }
         }
-        let home = std::env::var("HOME").unwrap_or_else(|_| "/home/huntersthompson".into());
-        PathBuf::from(home).join("projects/cms/deploy/ssh/caseflow_authorized_keys")
+        let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
+        PathBuf::from(home).join("deploy/ssh/caseflow_authorized_keys")
     }
 
     fn ensure_parent(path: &Path) -> AppResult<()> {

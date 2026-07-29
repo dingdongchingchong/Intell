@@ -577,8 +577,6 @@
     const TOKEN_KEY = 'access_token';
     const USER_KEY = 'caseflow_user';
     const REFRESH_TOKEN_KEY = 'refresh_token';
-    const TAILSCALE_API = 'http://100.68.147.74:8080';
-
     function resolveApiUrl() {
       const saved = localStorage.getItem('cf_api_base');
       if (saved) return saved.replace(/\/$/, '');
@@ -587,12 +585,12 @@
       if (location.protocol.startsWith('http') && host && host !== 'localhost' && host !== '127.0.0.1') {
         return `http://${host}:8080`;
       }
-      // file:// or localhost page: try loopback first, Tailscale as fallback default
+      // file:// or localhost page: try loopback first
       return 'http://127.0.0.1:8080';
     }
 
     const API_URL = resolveApiUrl();
-    // If loopback fails in practice, user can: localStorage.setItem('cf_api_base', TAILSCALE_API)
+    // If loopback fails in practice, user can: localStorage.setItem('cf_api_base', 'http://<host>:8080')
 
     // ============================================
     // AUTH HELPERS
@@ -666,8 +664,8 @@
       } catch (err) {
         const tip =
           API_URL.includes('127.0.0.1') || API_URL.includes('localhost')
-            ? ` Try opening the UI at http://100.68.147.74:3000 or run: localStorage.setItem('cf_api_base','${TAILSCALE_API}'); location.reload()`
-            : ' Confirm Tailscale is connected and `cargo run` is listening.';
+            ? ' Open the UI via Tailscale (same host:3000) or set localStorage cf_api_base to your API URL and reload.'
+            : ' Confirm Tailscale is connected and the API is listening.';
         throw new Error(
           `Cannot reach API at ${API_URL}. (${err.message})${tip}`
         );

@@ -4,7 +4,7 @@
 
 CaseFlow can be reached without a public domain using:
 
-1. **Tailscale** (preferred) — mesh VPN to `100.68.147.74` / MagicDNS
+1. **Tailscale** (preferred) — mesh VPN to your node / MagicDNS hostname
 2. **SSH tunnel** — forward local `3000` + `8080` to the server
 3. **LAN/VPN** — only if firewall + `ALLOWED_CIDRS` allow it
 
@@ -15,11 +15,11 @@ Default CMS login (seed): `admin` / `admin123456` (change in production).
 ## Option A: Tailscale
 
 1. Install Tailscale and join the same tailnet.
-2. Open **http://100.68.147.74:3000**  
-   or **http://caseflow.tail18069f.ts.net:3000**
+2. Open **http://\<TAILSCALE_IP_OR_MAGICDNS\>:3000**  
+   Set `SERVER_HOST` / `MAGIC_DNS` when generating access scripts (see below).
 3. Sign in.
 
-Backend API: `http://100.68.147.74:8080` (health: `/health`).
+Backend API: `http://\<TAILSCALE_IP_OR_MAGICDNS\>:8080` (health: `/health`).
 
 ---
 
@@ -37,7 +37,7 @@ Backend API: `http://100.68.147.74:8080` (health: `/health`).
 ```bash
 # From the CaseFlow repo (or a copy of tunnel.sh shared by admin)
 chmod +x tunnel.sh
-./tunnel.sh
+SERVER_USER=youruser SERVER_HOST=100.x.y.z ./tunnel.sh
 ```
 
 Then open **http://localhost:3000**. Keep the tunnel terminal open.
@@ -45,7 +45,7 @@ Then open **http://localhost:3000**. Keep the tunnel terminal open.
 Override host/user:
 
 ```bash
-SERVER_USER=huntersthompson SERVER_HOST=100.68.147.74 ./tunnel.sh
+SERVER_USER=youruser SERVER_HOST=100.x.y.z ./tunnel.sh
 ```
 
 Manual equivalent:
@@ -54,7 +54,7 @@ Manual equivalent:
 ssh -N \
   -L 3000:127.0.0.1:3000 \
   -L 8080:127.0.0.1:8080 \
-  huntersthompson@100.68.147.74
+  youruser@100.x.y.z
 ```
 
 The Investigation Manager resolves the API to `http://127.0.0.1:8080` when the page is on localhost, which matches this tunnel.
@@ -86,7 +86,7 @@ Env:
 
 ```bash
 # Absolute path to the managed keys file (one key per line, "# username" comment)
-SSH_AUTHORIZED_KEYS_PATH=/home/huntersthompson/projects/cms/deploy/ssh/caseflow_authorized_keys
+SSH_AUTHORIZED_KEYS_PATH=/path/to/cms/deploy/ssh/caseflow_authorized_keys
 ```
 
 Sync into live SSH access (server):
@@ -100,7 +100,8 @@ Sync into live SSH access (server):
 ## Generate per-user instructions
 
 ```bash
-./scripts/generate-access-script.sh user@example.com alice
+SERVER_HOST=100.x.y.z MAGIC_DNS=caseflow.tailnet-xxxx.ts.net \
+  ./scripts/generate-access-script.sh user@example.com alice
 # → /tmp/caseflow-access-alice.txt
 ```
 
