@@ -1,4 +1,3 @@
-# Keep Vercel uploads lean — frontend-only deploy
 target
 **/target
 legacy
@@ -15,6 +14,3 @@ crates
 frontend
 *.pem
 *.key
-.env
-.env.local
-.env.production
