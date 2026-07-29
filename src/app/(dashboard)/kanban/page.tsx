@@ -44,25 +44,30 @@ export default function KanbanPage() {
     return cols;
   }, [cases]);
 
-  async function onDrop(stage: string) {
-    if (!dragId) return;
-    const current = cases.find((c) => c.id === dragId);
+  async function onDrop(stage: string, e?: React.DragEvent) {
+    e?.preventDefault();
+    const id =
+      dragId ||
+      e?.dataTransfer.getData("text/plain") ||
+      null;
+    if (!id) return;
+    const current = cases.find((c) => c.id === id);
     if (!current || current.stage === stage) {
       setDragId(null);
       return;
     }
     setCases((prev) =>
-      prev.map((c) => (c.id === dragId ? { ...c, stage } : c))
+      prev.map((c) => (c.id === id ? { ...c, stage } : c))
     );
     setDragId(null);
     try {
-      await browserApi(`/cases/${dragId}/stage`, token, {
+      await browserApi(`/cases/${id}/stage`, token, {
         method: "PATCH",
         body: JSON.stringify({ stage }),
       });
       toast.success("Stage updated");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Update failed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Update failed");
       load();
     }
   }
@@ -82,7 +87,7 @@ export default function KanbanPage() {
               key={col.id}
               className="w-72 shrink-0 rounded-xl border border-slate-200 bg-slate-100/70"
               onDragOver={(e) => e.preventDefault()}
-              onDrop={() => onDrop(col.id)}
+              onDrop={(e) => onDrop(col.id, e)}
             >
               <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white/90 px-3 py-3 backdrop-blur">
                 <div className="flex items-center gap-2 text-sm font-semibold">
@@ -101,7 +106,12 @@ export default function KanbanPage() {
                   <div
                     key={c.id}
                     draggable
-                    onDragStart={() => setDragId(c.id)}
+                    onDragStart={(e) => {
+                      setDragId(c.id);
+                      e.dataTransfer.setData("text/plain", c.id);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    onDragEnd={() => setDragId(null)}
                     className="cursor-grab rounded-lg border border-slate-200 bg-white p-3 shadow-sm active:cursor-grabbing"
                   >
                     <div className="text-xs font-semibold text-blue-700">
