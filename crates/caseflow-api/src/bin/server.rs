@@ -123,7 +123,11 @@ async fn main() -> anyhow::Result<()> {
         .ok()
         .and_then(|s| s.parse().ok())
         .unwrap_or(8080);
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    // Local default: loopback. Production/Docker/ngrok: set API_BIND=0.0.0.0
+    let bind_host = std::env::var("API_BIND").unwrap_or_else(|_| "127.0.0.1".into());
+    let addr: SocketAddr = format!("{bind_host}:{port}")
+        .parse()
+        .map_err(|e| anyhow::anyhow!("invalid API_BIND/API_PORT: {e}"))?;
     tracing::info!(%addr, "CaseFlow API listening");
     eprintln!("[caseflow] listening on http://{addr}");
     let listener = tokio::net::TcpListener::bind(addr).await?;

@@ -5,6 +5,15 @@ import GitHubProvider from "next-auth/providers/github";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080";
 
+function apiHeaders(extra: HeadersInit = {}): HeadersInit {
+  return {
+    "Content-Type": "application/json",
+    // Free ngrok shows an interstitial unless this header is set
+    "ngrok-skip-browser-warning": "true",
+    ...extra,
+  };
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -19,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         try {
           res = await fetch(`${API_URL}/api/v1/auth/login`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: apiHeaders(),
             body: JSON.stringify({
               email: credentials.email,
               username: credentials.email,
@@ -27,8 +36,12 @@ export const authOptions: NextAuthOptions = {
             }),
           });
         } catch {
+          const isLocal =
+            API_URL.includes("127.0.0.1") || API_URL.includes("localhost");
           throw new Error(
-            `Cannot reach API at ${API_URL}. Start it with: npm run dev:api`
+            isLocal
+              ? `Cannot reach API at ${API_URL}. Locally run: npm run dev:api. On Vercel, set NEXT_PUBLIC_API_URL to your hosted API (not localhost).`
+              : `Cannot reach API at ${API_URL}. Check that the Rust API is online and CORS allows this site.`
           );
         }
         if (!res.ok) {

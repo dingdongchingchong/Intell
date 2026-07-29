@@ -4,6 +4,14 @@ import type { Case, CreateCaseInput, DashboardStats, UserPublic } from "@/lib/ty
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080";
 
+function apiHeaders(extra: HeadersInit = {}): HeadersInit {
+  return {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
+    ...extra,
+  };
+}
+
 async function authHeader(): Promise<HeadersInit> {
   const session = await getServerSession(authOptions);
   const token = (session as { accessToken?: string } | null)?.accessToken;
@@ -15,8 +23,7 @@ export async function apiClient<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(await authHeader()),
+    ...apiHeaders(await authHeader()),
     ...options.headers,
   };
 
@@ -42,8 +49,7 @@ export async function browserApi<T>(
   const res = await fetch(`${API_URL}/api/v1${endpoint}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...apiHeaders(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
     cache: "no-store",
