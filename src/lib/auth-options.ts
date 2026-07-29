@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
           });
         } catch {
           throw new Error(
-            `Cannot reach API at ${API_URL}. Run: npm run dev:api`
+            `Cannot reach API at ${API_URL}. Start it with: npm run dev:api`
           );
         }
         if (!res.ok) {

@@ -1,6 +1,9 @@
 # CaseFlow — Enterprise Investigation CMS
 
-Next.js 14 frontend + Rust API (SQLx/Postgres) for legal investigation case management. Deploy frontend on Vercel; run the API locally or as a long-lived service (Neon/Supabase Postgres).
+Next.js 14 frontend + Rust API (SQLx/Postgres) for legal investigation case management.
+
+- **Vercel** hosts the Next.js app (repo root — auto-detected)
+- **Fly / Railway / Render / VPS** hosts the Axum API against Neon/Supabase Postgres
 
 > **ORM note:** Prax ORM was evaluated but is still early WIP. Production data access uses **SQLx** with typed models in `crates/caseflow-core`.
 
@@ -9,36 +12,42 @@ Next.js 14 frontend + Rust API (SQLx/Postgres) for legal investigation case mana
 | Layer | Stack |
 |-------|--------|
 | Frontend | Next.js 14 App Router, TypeScript, Tailwind, NextAuth.js |
-| API | Rust (`caseflow-core` + Axum server / Vercel `vercel_runtime` bins) |
+| API | Rust (`caseflow-core` + Axum in `crates/caseflow-api`) |
 | Database | PostgreSQL (Neon / Supabase / local) |
 | Desktop | Optional Tauri shell in `desktop/` (legacy SPA also in `legacy/`) |
 
 ```
 cms/
-├── frontend/                 # Next.js app
+├── src/                      # Next.js App Router
+├── public/
 ├── crates/caseflow-core/     # Domain, auth, SQLx, migrations
-├── api/                      # Axum server + Vercel function bins
+├── crates/caseflow-api/      # Axum server + optional vercel_runtime bins
 ├── desktop/                  # Tauri (optional)
 ├── legacy/                   # Previous SPA + Axum CMS
-├── Cargo.toml                # Rust workspace
-└── vercel.json
+├── package.json              # Next.js app (Vercel entry)
+└── Cargo.toml                # Rust workspace
 ```
 
 ## Quick start
 
 ### 1. Database
 
-Create a Postgres database and set `DATABASE_URL` in `.env` (copy from `.env.example`).
-
 ```bash
 cp .env.example .env
+cp .env.example .env.local   # Next.js reads .env.local
 # edit DATABASE_URL, JWT_SECRET, NEXTAUTH_SECRET
+```
+
+Local Postgres (Docker/Podman):
+
+```bash
+podman compose up -d   # or: docker compose up -d
+# DATABASE_URL=postgres://cms:cms@127.0.0.1:5433/caseflow
 ```
 
 ### 2. Rust API
 
 ```bash
-# from repo root
 cargo run -p caseflow-api --bin seed     # migrate + seed admin
 cargo run -p caseflow-api --bin server   # http://127.0.0.1:8080
 ```
@@ -48,15 +57,38 @@ Default admin: `admin` / `admin123456` (override via `SEED_ADMIN_*`).
 ### 3. Next.js frontend
 
 ```bash
-cd frontend
-cp ../.env.example .env.local   # or symlink env vars
-# ensure NEXT_PUBLIC_API_URL=http://127.0.0.1:8080
-# ensure NEXTAUTH_SECRET and NEXTAUTH_URL are set
 npm install
 npm run dev
 ```
 
 Open http://localhost:3000 → login → Dashboard / Cases / Kanban / Users.
+
+## Deploy to Vercel (frontend)
+
+Import **this repo** on [vercel.com/new](https://vercel.com/new) — leave **Root Directory** as `.` (repo root). Framework: **Next.js** (auto-detected from `package.json`).
+
+### Environment variables
+
+| Name | Example | Notes |
+|------|---------|--------|
+| `NEXTAUTH_URL` | `https://your-app.vercel.app` | Exact deployment URL |
+| `NEXTAUTH_SECRET` | long random string | `openssl rand -base64 32` |
+| `NEXT_PUBLIC_API_URL` | `https://api.yourdomain.com` | Public Axum API — **not** `127.0.0.1` |
+
+Optional: `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, `GITHUB_ID` / `GITHUB_SECRET`.
+
+### After deploy
+
+1. Host the Rust API separately (Fly.io, Railway, Render, or a VPS) with `DATABASE_URL` pointing at Neon/Supabase (use a **pooler** URL).
+2. Set CORS on the API to allow your Vercel origin.
+3. Redeploy the frontend if you change `NEXT_PUBLIC_API_URL`.
+
+CLI alternative:
+
+```bash
+npx vercel          # link + preview
+npx vercel --prod   # production
+```
 
 ## API surface
 
@@ -74,17 +106,9 @@ Open http://localhost:3000 → login → Dashboard / Cases / Kanban / Users.
 
 Roles: `admin`, `manager`, `investigator`, `viewer`.
 
-## Vercel deployment
-
-1. Push repo; import on Vercel with root directory = repo (or set `frontend` as root and point `NEXT_PUBLIC_API_URL` at your hosted API).
-2. Set env: `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `NEXT_PUBLIC_API_URL`, OAuth keys as needed.
-3. Host the Rust API separately (Fly.io, Railway, Render, or your VPS) against Neon/Supabase — serverless cold starts + Postgres connection pooling need a pooler (Neon pooler / PgBouncer).
-
-Vercel Rust function bins live under `api/src/bin/{auth,cases,users,dashboard,health}.rs` for gradual migration to `vercel_runtime`; the Axum `server` binary is the recommended production API today.
-
 ## Legacy
 
-Previous Investigation Manager SPA and Axum CMS live in `legacy/spa` and `legacy/axum-api`. Start scripts under `scripts/` may still target those paths.
+Previous Investigation Manager SPA and Axum CMS live in `legacy/spa` and `legacy/axum-api`.
 
 ## Security checklist (baseline)
 
@@ -98,4 +122,3 @@ Previous Investigation Manager SPA and Axum CMS live in `legacy/spa` and `legacy
 ## License
 
 MIT
-# origin

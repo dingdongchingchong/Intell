@@ -1,13 +1,56 @@
 {
   "name": "caseflow",
+  "version": "0.1.0",
   "private": true,
-  "description": "CaseFlow monorepo scripts",
+  "description": "CaseFlow — Next.js frontend (Vercel) + Rust API workspace",
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
-    "dev:web": "npm --prefix frontend run dev",
-    "build:web": "npm --prefix frontend run build",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "dev:web": "next dev",
+    "build:web": "next build",
     "dev:api": "cargo run -p caseflow-api --bin server",
     "seed": "cargo run -p caseflow-api --bin seed",
     "tauri:dev": "npm --prefix desktop run tauri:dev || echo 'See desktop/ and docs/DESKTOP.md'"
   },
-  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c"
+  "dependencies": {
+    "@hookform/resolvers": "^5.5.7",
+    "@radix-ui/react-avatar": "^1.2.6",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-dropdown-menu": "^2.1.24",
+    "@radix-ui/react-label": "^2.1.15",
+    "@radix-ui/react-select": "^2.3.7",
+    "@radix-ui/react-separator": "^1.1.15",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@radix-ui/react-tabs": "^1.1.21",
+    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.27.0",
+    "next": "14.2.35",
+    "next-auth": "^4.24.11",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.83.0",
+    "recharts": "^3.10.1",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
 }

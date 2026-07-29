@@ -1,0 +1,20 @@
+# Keep Vercel uploads lean — frontend-only deploy
+target
+**/target
+legacy
+desktop
+docs
+deploy
+logs
+.venv
+sample.csv
+*.csv
+Cargo.toml
+Cargo.lock
+crates
+frontend
+*.pem
+*.key
+.env
+.env.local
+.env.production

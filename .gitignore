@@ -1,10 +1,8 @@
 # Dependencies / build
 node_modules/
-frontend/node_modules/
-frontend/.next/
-frontend/out/
+.next/
+out/
 target/
-api/target/
 crates/*/target/
 dist/
 
@@ -12,9 +10,7 @@ dist/
 .env
 .env.*
 !.env.example
-!**/.env.example
 .env.local
-frontend/.env.local
 **/.env
 **/.env.production
 **/.env.*.bak
@@ -27,7 +23,6 @@ frontend/.env.local
 id_rsa
 id_ed25519
 id_ecdsa
-# Accidental OpenSSH key dumps in the repo root
 \# On user*
 \#\ On\ user*
 
@@ -35,14 +30,19 @@ id_ecdsa
 logs/
 *.log
 .DS_Store
+*.tsbuildinfo
 
 # Tauri / desktop
 desktop/src-tauri/target/
 desktop/src-tauri/binaries/caseflow-backend-*
+desktop/node_modules/
 
 # Legacy cargo
 legacy/**/target/
 
-# IDE
+# IDE / deploy metadata
 .vercel
 .cursor/
+
+# Leftover empty dir if local cleanup incomplete
+frontend/

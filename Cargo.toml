@@ -2,9 +2,9 @@
 resolver = "2"
 members = [
   "crates/caseflow-core",
-  "api",
+  "crates/caseflow-api",
 ]
-default-members = ["api"]
+default-members = ["crates/caseflow-api"]
 
 [workspace.package]
 version = "0.1.0"
